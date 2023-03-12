@@ -80,7 +80,7 @@ void *thread_per_element(void *arg)
     int col = args->col;
     FILE *fp = args->out;
     int temp = 0;
-    for (int i = 0; i < row1; i++)
+    for (int i = 0; i < col1; i++)
     {
         temp += matrix1[row][i] * matrix2[i][col];
     }
@@ -194,9 +194,9 @@ int main(int argc, char *argv[])
         gettimeofday(&stop, NULL); //end checking time
         printf("Thread per row method took:%lu milliseconds and operated on %d threads\n", stop.tv_usec - start.tv_usec, row1);
     }
-    threads = realloc(threads, (row1 * row1 + row1 + 1) * sizeof(pthread_t));
+    threads = realloc(threads, (row1 * col2 + row1 + 1) * sizeof(pthread_t));
 
-    // Thread per element
+    // // Thread per element
     {
         gettimeofday(&start, NULL); //start checking time
         strcat(out, "_per_element.txt");
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
         }
         fclose(fp);
         gettimeofday(&stop, NULL); //end checking time
-        printf("Thread per element method took:%lu milliseconds and operated on %d threads\n", stop.tv_usec - start.tv_usec, row1 * row1);
+        printf("Thread per element method took:%lu milliseconds and operated on %d threads\n", stop.tv_usec - start.tv_usec, row1 * col2);
     }
     
     fclose(fp1);
