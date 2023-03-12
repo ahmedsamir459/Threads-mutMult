@@ -91,6 +91,7 @@ void *thread_per_element(void *arg)
 int main(int argc, char *argv[])
 {
     struct thread_args args = {.row = 0, .out = NULL};
+    struct timeval stop, start;
 
     pthread_t *threads;
     threads = (pthread_t *)malloc(sizeof(pthread_t));
@@ -152,7 +153,9 @@ int main(int argc, char *argv[])
     }
 
     int rc;
+
     //Thread per matrix
+    gettimeofday(&start, NULL); //start checking time
     rc = pthread_create(&threads[0], NULL, thread_per_matrix, (void *)out);
     if (rc)
     {
@@ -160,10 +163,14 @@ int main(int argc, char *argv[])
         exit(-1);
     }
     pthread_join(threads[0], NULL);
+    gettimeofday(&stop, NULL); //end checking time
+    printf("Thread per matrix method took:%lu milliseconds and operated on %d threads\n", stop.tv_usec - start.tv_usec, 1);
+
     threads = realloc(threads, (row1 + 1) * sizeof(pthread_t));
 
     //Thread per row
     {
+        gettimeofday(&start, NULL); //start checking time
         char *temp = malloc(sizeof(char) * MAX_FILENAME_LENGTH);
         strcpy(temp, out);
         strcat(temp, "_per_row.txt");
@@ -184,12 +191,14 @@ int main(int argc, char *argv[])
         }
         free(temp);
         fclose(fp);
+        gettimeofday(&stop, NULL); //end checking time
+        printf("Thread per row method took:%lu milliseconds and operated on %d threads\n", stop.tv_usec - start.tv_usec, row1);
     }
     threads = realloc(threads, (row1 * row1 + row1 + 1) * sizeof(pthread_t));
 
     // Thread per element
-    
     {
+        gettimeofday(&start, NULL); //start checking time
         strcat(out, "_per_element.txt");
         FILE *fp = fopen(out, "w");
         fprintf(fp, "Method: A thread per element\n");
@@ -214,6 +223,8 @@ int main(int argc, char *argv[])
             fprintf(fp, "\n");
         }
         fclose(fp);
+        gettimeofday(&stop, NULL); //end checking time
+        printf("Thread per element method took:%lu milliseconds and operated on %d threads\n", stop.tv_usec - start.tv_usec, row1 * row1);
     }
     
     fclose(fp1);
